@@ -10,14 +10,15 @@ prefix foaf: <http://xmlns.com/foaf/0.1/>
 
 select ?user ?name ?pubkey (count(distinct ?np) as ?np_count) where {
   graph npa:graph {
-    ?intronp npa:hasHeadGraph ?h .
+    ?intronp npa:hasHeadGraph ?introh .
     ?intronp npa:hasValidSignatureForPublicKey ?pubkey .
+    ?np npa:hasHeadGraph ?h .
     ?np npa:hasValidSignatureForPublicKey ?pubkey .
   }
-  graph ?h {
-    ?intronp np:hasAssertion ?a .
+  graph ?introh {
+    ?intronp np:hasAssertion ?introa .
   }
-  graph ?a {
+  graph ?introa {
     ?keydeclaration npx:declaredBy ?user .
     optional {
       ?user foaf:name ?name .
@@ -46,6 +47,12 @@ select ?user ?name ?pubkey (count(distinct ?np) as ?np_count) where {
     graph ?si {
       ?superseding npx:supersedes ?intronp .
     }
+  }
+  graph ?h {
+    ?np np:hasPublicationInfo ?i .
+  }
+  graph ?i {
+    ?np dct:creator ?user .
   }
 }
 group by ?user ?name ?pubkey
